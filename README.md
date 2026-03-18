@@ -1,10 +1,10 @@
 # Household Portfolio Tracker
 
-A local-first household portfolio tracker built with FastAPI, React, and SQLite.
+A household portfolio tracker built with FastAPI, React, and a portable SQLAlchemy data layer.
 
 ## Monorepo Layout
 
-- `backend/`: FastAPI API, domain services, SQLite models, import pipeline, background jobs
+- `backend/`: FastAPI API, domain services, SQLAlchemy models, import pipeline, background jobs
 - `frontend/`: React + TypeScript UI built with Vite
 - `design-system/`: standalone Harbor npm package extracted from the app UI
 - `ops/`: Docker, Caddy, and Litestream assets for hosted deployment hardening
@@ -46,18 +46,21 @@ The API binds to `http://127.0.0.1:8000` by default and the Vite dev server runs
 
 ## Easiest Cloud Deploy
 
-The simplest hosted path for this app is now Render.
+The simplest durable low-cost path for this app is now:
+
+- free compute on `Render`
+- durable hosted `Neon Postgres`
 
 - Blueprint file: `render.yaml`
 - Step-by-step guide: `ops/RENDER_DEPLOY.md`
 - One-click URL helper: `scripts/render-blueprint-url.sh`
 
-Expected starting cost from Render's official pricing page:
+Expected cost:
 
-- Starter web service: `$7/month`
-- persistent disk: `$0.25/GB/month`
+- `Render` free web service for the app
+- `Neon` free Postgres for durable data
 
-This repo is configured for a `1 GB` disk, so the expected starting cost is about `$7.25/month`.
+That means the app may sleep when idle, but your data does not depend on the app host's filesystem anymore.
 
 ## Local Node Toolchain
 
@@ -90,7 +93,8 @@ The live showroom inside the app is available at `http://127.0.0.1:5173/design-s
 
 Backend:
 
-- `PORTFOLIO_DB_URL`: override the SQLite database URL
+- `PORTFOLIO_DB_URL`: primary database URL. For durable hosted use, point this at Neon Postgres.
+- `DATABASE_URL`: alias for `PORTFOLIO_DB_URL`
 - `ENVIRONMENT`: `development` or `production`
 - `FINNHUB_API_KEY`: optional live price/history source for US securities
 - `ALPHA_VANTAGE_API_KEY`: optional dividend and corporate action source
@@ -116,6 +120,7 @@ Frontend:
 ## Notes
 
 - The MVP is still local-first, but it now supports optional password auth for protected API routes.
+- For hosted durability, the recommended database is `Neon Postgres`. SQLite remains supported for local development, testing, and one-time migration.
 - If API keys are missing, the backend falls back to cached or deterministic synthetic prices so the UI remains usable.
 - Spreadsheet imports support CSV and Excel (`.xlsx` / `.xls`), including broker-specific position layouts for Vanguard, Fidelity, Schwab, Robinhood, Wealthfront, Empower, Principal, and Slavic 401k.
 - Import previews now include reconciliation hints, suggested destination accounts, inferred-value warnings, and duplicate-lot detection before commit.
@@ -129,7 +134,7 @@ Frontend:
 
 ## Backup And Restore
 
-Create a consistent SQLite backup:
+Create a portable database backup:
 
 ```bash
 ./scripts/backup-db.sh
@@ -138,10 +143,18 @@ Create a consistent SQLite backup:
 Restore from a backup file:
 
 ```bash
-./scripts/restore-db.sh /path/to/backup.db
+./scripts/restore-db.sh /path/to/backup.db-or-snapshot.json
 ```
 
-Backups write a sidecar JSON manifest with size and SHA-256 metadata.
+For SQLite, backups are binary `.db` copies with a sidecar JSON manifest.
+
+For Postgres/Neon, backups are JSON snapshots exported through the ORM schema.
+
+If you already have local SQLite data and want to move it into Neon:
+
+```bash
+./scripts/migrate-to-neon.sh "postgresql://USER:PASSWORD@YOUR-NEON-HOST/neondb?sslmode=require"
+```
 
 Validate the local Litestream replica and restore workflow end to end:
 
@@ -149,9 +162,9 @@ Validate the local Litestream replica and restore workflow end to end:
 ./scripts/validate-litestream.sh
 ```
 
-## Hosted Deployment
+## Self-Hosted Deployment
 
-The repo now includes a concrete production path under `ops/`:
+The repo also includes a concrete self-hosted path under `ops/` if you later want your own VPS/container host:
 
 - `ops/Dockerfile`: production image that builds the frontend, serves it from FastAPI, runs Alembic migrations on boot, and drops to a non-root user
 - `ops/docker-compose.prod.yml`: app + Caddy + Litestream stack

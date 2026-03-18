@@ -19,6 +19,7 @@ dependencies = [
   "pandas>=2.2.3",
   "pydantic>=2.10.6",
   "pydantic-settings>=2.8.1",
+  "psycopg[binary]>=3.2.6",
   "python-multipart>=0.0.20",
   "pymupdf>=1.25.3",
   "quantstats>=0.0.77",
@@ -51,6 +52,7 @@ where = ["."]
 
 [project.scripts]
 portfolio-sqlite = "app.ops.sqlite_backup:main"
+portfolio-db = "app.ops.database_portability:main"
 
 [tool.ruff]
 line-length = 100

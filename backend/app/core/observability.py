@@ -41,6 +41,7 @@ class ObservabilityStore:
         self,
         *,
         environment: str,
+        database_backend: str,
         auth_enabled: bool,
         scheduler_running: bool,
         database_ok: bool,
@@ -74,6 +75,7 @@ class ObservabilityStore:
             )
             return ObservabilityResponse(
                 environment=environment,
+                database_backend=database_backend,
                 auth_enabled=auth_enabled,
                 scheduler_running=scheduler_running,
                 database_ok=database_ok,

@@ -8,7 +8,7 @@ services:
     healthCheckPath: /api/ready
     envVars:
       - key: PORTFOLIO_DB_URL
-        value: sqlite:////tmp/portfolio.db
+        sync: false
       - key: ENVIRONMENT
         value: production
       - key: CORS_ORIGINS
@@ -16,7 +16,7 @@ services:
       - key: ALLOWED_HOSTS
         value: "*"
       - key: FORCE_HTTPS
-        value: "false"
+        value: "true"
       - key: AUTH_PASSWORD
         sync: false
       - key: AUTH_SECRET

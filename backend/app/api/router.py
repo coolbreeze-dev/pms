@@ -249,6 +249,7 @@ def observability(request: Request, session: Session = Depends(get_session)) -> 
     latest = get_last_updated(session)
     return request.app.state.observability.snapshot(
         environment=settings.environment,
+        database_backend=settings.database_backend,
         auth_enabled=settings.auth_enabled,
         scheduler_running=scheduler.running,
         database_ok=database_ok,

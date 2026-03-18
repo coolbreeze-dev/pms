@@ -51,6 +51,7 @@ describe("SettingsPage import workflow", () => {
     ]);
     vi.mocked(api.getObservability).mockResolvedValue({
       environment: "development",
+      database_backend: "sqlite",
       auth_enabled: false,
       scheduler_running: true,
       database_ok: true,

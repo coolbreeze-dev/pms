@@ -3,9 +3,27 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
-from pydantic import Field, field_validator
+from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def normalize_database_url(value: str) -> str:
+    normalized = value.strip()
+    if normalized.startswith("postgres://"):
+        normalized = f"postgresql+psycopg://{normalized.removeprefix('postgres://')}"
+    elif normalized.startswith("postgresql://"):
+        normalized = f"postgresql+psycopg://{normalized.removeprefix('postgresql://')}"
+
+    parsed = urlparse(normalized)
+    hostname = parsed.hostname or ""
+    if parsed.scheme.startswith("postgresql") and hostname.endswith(".neon.tech"):
+        query = dict(parse_qsl(parsed.query, keep_blank_values=True))
+        if "sslmode" not in query:
+            query["sslmode"] = "require"
+            normalized = urlunparse(parsed._replace(query=urlencode(query)))
+    return normalized
 
 
 class Settings(BaseSettings):
@@ -14,7 +32,8 @@ class Settings(BaseSettings):
     app_name: str = "Household Portfolio Tracker API"
     api_prefix: str = "/api"
     portfolio_db_url: str = Field(
-        default=f"sqlite:///{Path(__file__).resolve().parents[2] / 'data' / 'portfolio.db'}"
+        default=f"sqlite:///{Path(__file__).resolve().parents[2] / 'data' / 'portfolio.db'}",
+        validation_alias=AliasChoices("PORTFOLIO_DB_URL", "DATABASE_URL"),
     )
     cors_origins: list[str] = Field(default_factory=lambda: ["http://127.0.0.1:5173"])
     allowed_hosts: list[str] = Field(default_factory=lambda: ["*"])
@@ -43,6 +62,11 @@ class Settings(BaseSettings):
             return value
         return [origin.strip() for origin in value.split(",") if origin.strip()]
 
+    @field_validator("portfolio_db_url", mode="before")
+    @classmethod
+    def normalize_database_url_value(cls, value: str) -> str:
+        return normalize_database_url(value)
+
     @property
     def auth_enabled(self) -> bool:
         return bool(self.auth_password)
@@ -50,6 +74,15 @@ class Settings(BaseSettings):
     @property
     def brokerage_sync_enabled(self) -> bool:
         return self.brokerage_sync_provider.lower() != "disabled"
+
+    @property
+    def database_backend(self) -> str:
+        parsed = urlparse(self.portfolio_db_url)
+        if parsed.scheme.startswith("sqlite"):
+            return "sqlite"
+        if parsed.scheme.startswith("postgresql"):
+            return "postgresql"
+        return parsed.scheme or "unknown"
 
 
 def get_settings_file_path() -> Path:
@@ -73,6 +106,7 @@ def refresh_settings_cache(updates: dict[str, str | None] | None = None) -> Sett
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
     settings = Settings(_env_file=get_settings_file_path())
-    db_path = settings.portfolio_db_url.removeprefix("sqlite:///")
-    Path(db_path).parent.mkdir(parents=True, exist_ok=True)
+    if settings.database_backend == "sqlite":
+        db_path = settings.portfolio_db_url.removeprefix("sqlite:///")
+        Path(db_path).parent.mkdir(parents=True, exist_ok=True)
     return settings

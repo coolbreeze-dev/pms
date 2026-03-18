@@ -507,7 +507,10 @@ export function SettingsPage() {
                 <article className="insight-card">
                   <p>Database</p>
                   <strong>{observabilityQuery.data.database_ok ? "Healthy" : "Check needed"}</strong>
-                  <span>Scheduler {observabilityQuery.data.scheduler_running ? "running" : "stopped"}</span>
+                  <span>
+                    {observabilityQuery.data.database_backend.toUpperCase()} · Scheduler{" "}
+                    {observabilityQuery.data.scheduler_running ? "running" : "stopped"}
+                  </span>
                 </article>
                 <article className="insight-card">
                   <p>Requests</p>
@@ -544,24 +547,30 @@ export function SettingsPage() {
         <article className="panel">
           <div className="panel__header">
             <div>
-              <p className="eyebrow">Backup workflow</p>
-              <h2>Portable SQLite backup and restore</h2>
+              <p className="eyebrow">Data durability</p>
+              <h2>Backup, restore, and migrate your database</h2>
             </div>
           </div>
           <div className="stack">
             <p className="status-line">
-              Use `./scripts/backup-db.sh` to create a consistent snapshot and `./scripts/restore-db.sh` to restore it.
+              Use <code>./scripts/backup-db.sh</code> for a portable snapshot, <code>./scripts/restore-db.sh</code>{" "}
+              to restore it, and <code>./scripts/migrate-to-neon.sh</code> to copy your local SQLite data into Neon.
             </p>
             <div className="insight-grid">
               <article className="insight-card">
                 <p>Backup command</p>
                 <strong><code>./scripts/backup-db.sh</code></strong>
-                <span>Writes a SQLite copy plus JSON manifest in <code>backend/backups/</code></span>
+                <span>Writes a SQLite copy or JSON snapshot in <code>backend/backups/</code></span>
               </article>
               <article className="insight-card">
                 <p>Restore command</p>
-                <strong><code>./scripts/restore-db.sh /path/to/backup.db</code></strong>
-                <span>Stop the app first, then restore into the configured DB path</span>
+                <strong><code>./scripts/restore-db.sh /path/to/backup.db-or-snapshot.json</code></strong>
+                <span>Use JSON snapshots for Postgres/Neon restores</span>
+              </article>
+              <article className="insight-card">
+                <p>Neon migration</p>
+                <strong><code>./scripts/migrate-to-neon.sh "postgresql://..."</code></strong>
+                <span>Copies your local SQLite portfolio into a Neon Postgres database</span>
               </article>
             </div>
           </div>

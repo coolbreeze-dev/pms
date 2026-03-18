@@ -415,6 +415,7 @@ class EndpointMetric(APIModel):
 
 class ObservabilityResponse(APIModel):
     environment: str
+    database_backend: str
     auth_enabled: bool
     scheduler_running: bool
     database_ok: bool

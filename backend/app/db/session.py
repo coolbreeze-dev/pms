@@ -5,17 +5,23 @@ from collections.abc import Generator
 from sqlalchemy import Engine, create_engine, event, inspect, text
 from sqlalchemy.orm import Session, sessionmaker
 
-from app.core.config import get_settings
+from app.core.config import get_settings, normalize_database_url
 from app.db.base import Base
 
 
 def build_engine(database_url: str) -> Engine:
+    normalized_url = normalize_database_url(database_url)
     connect_args: dict[str, object] = {}
-    if database_url.startswith("sqlite"):
+    if normalized_url.startswith("sqlite"):
         connect_args = {"check_same_thread": False, "timeout": 30}
-    engine = create_engine(database_url, connect_args=connect_args, future=True)
+    engine = create_engine(
+        normalized_url,
+        connect_args=connect_args,
+        future=True,
+        pool_pre_ping=not normalized_url.startswith("sqlite"),
+    )
 
-    if database_url.startswith("sqlite"):
+    if normalized_url.startswith("sqlite"):
         @event.listens_for(engine, "connect")
         def set_sqlite_pragmas(dbapi_connection, _connection_record) -> None:
             cursor = dbapi_connection.cursor()

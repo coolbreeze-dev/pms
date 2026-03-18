@@ -302,6 +302,7 @@ export interface EndpointMetric {
 
 export interface ObservabilityResponse {
   environment: string;
+  database_backend: string;
   auth_enabled: boolean;
   scheduler_running: boolean;
   database_ok: boolean;

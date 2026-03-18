@@ -1,128 +1,119 @@
-# Render Deploy Guide
+# Render + Neon Deploy Guide
 
-This is the easiest hosted path for this app right now.
+This is the easiest path if you want:
 
-The checked-in `render.yaml` is now configured for a **free Render demo deploy**.
+- free app hosting to start
+- durable data
+- very little infrastructure work
+
+The recommended shape is:
+
+- `Render` free web service for the app
+- `Neon` free Postgres for the database
 
 That means:
 
-- no payment method is required just to try the app
-- the service can spin down when idle
-- the SQLite database is stored in `/tmp`, so data is **not durable**
+- your app may sleep when idle
+- your data will not be tied to the app host's local disk
+- redeploying the app will not wipe your portfolio data
 
-Use this only to preview the app, click around, and test the deployment path.
-For real usage, switch to a paid Starter instance with a persistent disk.
+## What You Need
 
-Why this is the recommended option:
+1. This repo pushed to GitHub
+2. A free `Neon` account
+3. A free `Render` account
 
-- It can deploy directly from this repo
-- It supports a persistent disk for the SQLite database
-- It gives you HTTPS automatically
-- It rebuilds on every `git push`
-- It keeps the app as one service instead of splitting frontend and backend
+## Step 1. Create a Neon Database
 
-## Expected Cost
+In Neon:
 
-### Free demo mode
+1. Create a new project
+2. Open the connection details
+3. Copy the pooled Postgres connection string
 
-- Render free web service: `$0`
-- persistent disk: not included
+It should look roughly like:
 
-### Durable paid mode later
-
-Render's official pricing page currently lists:
-
-- `Starter` web service: `$7/month`
-- persistent disk: `$0.25/GB/month`
-
-If you later move this app to a durable setup, the likely starting cost is about `$7.25/month`.
-
-## One-Time Setup
-
-### 1. Put this repo on GitHub
-
-If you do not already have a remote:
-
-```bash
-git init
-git add .
-git commit -m "Initial app commit"
-git branch -M main
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME.git
-git push -u origin main
+```text
+postgresql://USER:PASSWORD@ep-example-123456-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require
 ```
 
-If the repo already exists on GitHub, just push your latest code there.
+Important:
 
-### 2. Generate your one-click Render link
+- use the pooled connection string
+- keep `sslmode=require`
+
+## Step 2. If You Have Local Data, Migrate It to Neon
+
+If you already imported holdings locally and want to keep them:
+
+```bash
+./scripts/migrate-to-neon.sh "postgresql://USER:PASSWORD@ep-example-123456-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require"
+```
+
+That copies your current local SQLite portfolio into Neon.
+
+## Step 3. Open the Render Blueprint
+
+Generate the Blueprint URL:
 
 ```bash
 ./scripts/render-blueprint-url.sh
 ```
 
-That prints a Render Blueprint URL you can open in your browser.
+Then open the printed URL in your browser.
 
-## Deploy Steps
+Render will read `render.yaml` from GitHub.
 
-### 1. Open the Blueprint link
+## Step 4. Fill the Required Secrets in Render
 
-Render will read the checked-in `render.yaml` file and prefill the service configuration.
+Render will ask you for secrets. Set:
 
-### 2. Keep the defaults unless you know you want something different
-
-Recommended:
-
-- Service type: `Web Service`
-- Runtime: `Docker`
-- Plan: `Free`
-- No disk is expected in demo mode
-
-### 3. Fill the one required secret
-
-Render will ask for:
-
+- `PORTFOLIO_DB_URL`
+  Use your Neon connection string
 - `AUTH_PASSWORD`
+  Choose the password you will use to unlock the app
 
-Choose a password you will remember. This becomes the lock screen password for the app.
+Render will generate `AUTH_SECRET` automatically.
 
-Render will generate `AUTH_SECRET` automatically from the Blueprint.
+## Step 5. Deploy
 
-### 4. Click `Apply`
+Keep the defaults:
 
-Render will build the Docker image, start the app, mount the disk, and give you a public URL like:
-Render will build the Docker image, start the app, and give you a public URL like:
+- service type: `Web Service`
+- runtime: `Docker`
+- plan: `Free`
+
+Then click `Apply`.
+
+When deployment finishes, you will get a URL like:
 
 ```text
 https://your-service-name.onrender.com
 ```
 
-## After Deploy
+## Step 6. Verify It
 
-Run the smoke test against your public URL:
+Run:
 
 ```bash
 PORTFOLIO_APP_PASSWORD='your-password' ./scripts/smoke-deploy.sh https://your-service-name.onrender.com
 ```
 
-If that passes, open the site in a browser and log in with the same password.
+Then open the app in a browser and log in.
 
-## First-Time App Use
+## What To Expect On Free Hosting
 
-After login:
+This setup is durable, but not always-on.
 
-1. Go to `Settings`
-2. Import your CSV or Excel holdings
-3. Refresh prices
-4. Review the dashboard
+That means:
 
-Important:
-
-- If the service redeploys or restarts, your imported data may disappear
-- Treat this free deploy as a demo/smoke-test environment, not your permanent portfolio home
+- Render may spin the app down when idle
+- the first request after idle may be slow
+- Neon keeps the data, so your portfolio is still there
 
 ## Updating the App Later
 
-Once GitHub and Render are connected, updates are simple:
+Once GitHub and Render are connected:
 
 ```bash
 git add .
@@ -130,18 +121,25 @@ git commit -m "Your update"
 git push
 ```
 
-Render will auto-deploy the new version.
+Render will redeploy automatically.
 
-## Backups
+Your data remains in Neon.
 
-Render keeps the persistent disk mounted, but you should still use Litestream replication for off-host recovery later.
+## Backup Habit
 
-For now, the simplest backup habit is:
+For an extra safety layer, you can still export a portable snapshot:
 
 ```bash
 ./scripts/backup-db.sh
 ```
 
-## If You Want a Custom Domain Later
+Because the app is using Neon, that backup will be a JSON snapshot instead of a SQLite `.db` file.
 
-You can add that in the Render dashboard after the app is live. The app will still work fine on the default `onrender.com` URL.
+## If You Want a Paid Upgrade Later
+
+The first upgrade I would suggest is:
+
+- keep Neon
+- move Render from `Free` to a paid always-on plan
+
+That gives you the same durable storage model, just with fewer cold starts.

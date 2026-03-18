@@ -9,6 +9,7 @@ This folder now contains a concrete hosted deployment path for a small VPS or co
 - `RENDER_DEPLOY.md`: the simplest managed deployment path for non-infra users
 
 If you want the lowest-friction hosted option, use Render first. The Render Blueprint file lives at `render.yaml`.
+For the easiest durable hosted setup, pair the free Render web service with a free Neon Postgres database as described in `RENDER_DEPLOY.md`.
 
 ## Compose Stack
 
@@ -53,12 +54,14 @@ Those enable trusted-host filtering plus HTTPS redirect/HSTS behavior in the app
 
 ## Database and backups
 
-- The app uses SQLite in WAL mode.
+- The self-hosted compose stack uses SQLite in WAL mode.
 - Litestream replication is configured in `ops/litestream.yml`.
 - Mount the SQLite database on persistent storage in production.
 - Local backup and restore workflows are implemented via `./scripts/backup-db.sh` and `./scripts/restore-db.sh`.
 - A local replica-and-restore validation is available via `./scripts/validate-litestream.sh`.
 - The compose stack mounts the database at `/data/portfolio.db` and runs Litestream against the same named volume.
+
+For the managed hosted path, use Neon Postgres instead of the SQLite + Litestream stack.
 
 ## Litestream restore workflow
 
