@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { NavLink, Outlet } from "react-router-dom";
 
 import { api } from "../api/client";
+import { IconActionButton, LockIcon, UnlockIcon } from "./IconActionButton";
 import { formatDate } from "../lib/format";
 
 const navItems = [
@@ -10,7 +11,6 @@ const navItems = [
   { to: "/accounts", label: "Accounts" },
   { to: "/holdings", label: "Holdings" },
   { to: "/investments", label: "Investments" },
-  { to: "/readswell", label: "Readswell" },
   { to: "/settings", label: "Settings" },
 ];
 
@@ -66,8 +66,13 @@ export function AppShell() {
               />
             </label>
             <div className="form-actions">
-              <button className="button button--primary" type="submit" disabled={loginMutation.isPending || !password}>
-                {loginMutation.isPending ? "Unlocking..." : "Unlock app"}
+              <button
+                className="button button--primary button--icon-label"
+                type="submit"
+                disabled={loginMutation.isPending || !password}
+              >
+                <UnlockIcon />
+                <span>{loginMutation.isPending ? "Unlocking..." : "Unlock"}</span>
               </button>
             </div>
             {loginMutation.isError ? (
@@ -105,15 +110,15 @@ export function AppShell() {
             ))}
           </nav>
           {sessionQuery.data?.enabled ? (
-            <button
-              className="button button--ghost"
+            <IconActionButton
+              className="shell__session-action"
+              icon={<LockIcon />}
+              label="Lock app"
               onClick={() => {
                 api.logout();
                 queryClient.invalidateQueries({ queryKey: ["auth-session"] });
               }}
-            >
-              Lock
-            </button>
+            />
           ) : null}
         </div>
       </header>

@@ -53,7 +53,7 @@ describe("AppShell", () => {
 
     renderShell();
 
-    expect(await screen.findByText("Unlock app")).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Unlock" })).toBeInTheDocument();
     expect(screen.getByText("Protected session")).toBeInTheDocument();
   });
 
@@ -68,5 +68,6 @@ describe("AppShell", () => {
 
     expect(await screen.findByText("Dashboard content")).toBeInTheDocument();
     expect(screen.getByText("Household Portfolio Tracker")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Readswell" })).not.toBeInTheDocument();
   });
 });

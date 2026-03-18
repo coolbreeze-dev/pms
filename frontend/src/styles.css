@@ -52,7 +52,7 @@ textarea {
 .shell__header {
   display: flex;
   justify-content: space-between;
-  gap: 24px;
+  gap: 20px;
   align-items: flex-start;
   margin-bottom: 24px;
 }
@@ -60,7 +60,9 @@ textarea {
 .shell__actions {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 8px;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 .shell__header h1,
@@ -78,23 +80,39 @@ textarea {
 
 .shell__nav {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 8px;
+  flex-wrap: nowrap;
   justify-content: flex-end;
+  min-width: 0;
 }
 
 .shell__nav-link {
   border: 1px solid var(--line);
   border-radius: 999px;
-  padding: 10px 16px;
+  padding: 9px 15px;
   text-decoration: none;
   color: var(--ink);
   background: rgba(255, 255, 255, 0.65);
+  white-space: nowrap;
+  font-size: 0.96rem;
 }
 
 .shell__nav-link--active {
   background: var(--ink);
   color: white;
+}
+
+.shell__session-action {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.shell__session-action svg {
+  width: 17px;
+  height: 17px;
 }
 
 .stack {
@@ -215,6 +233,17 @@ textarea {
 .button--danger {
   border-color: rgba(178, 59, 59, 0.16);
   color: var(--danger);
+}
+
+.button--icon-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.button--icon-label svg {
+  width: 18px;
+  height: 18px;
 }
 
 .summary-grid {
