@@ -20,6 +20,9 @@ const DesignSystemPage = lazy(() =>
     default: module.DesignSystemPage,
   })),
 );
+const ReadswellPage = lazy(() =>
+  import("../features/readswell/ReadswellPage").then((module) => ({ default: module.ReadswellPage })),
+);
 const SettingsPage = lazy(() =>
   import("../features/settings/SettingsPage").then((module) => ({ default: module.SettingsPage })),
 );
@@ -32,6 +35,14 @@ export function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route
+          path="/readswell"
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <ReadswellPage />
+            </Suspense>
+          }
+        />
         <Route element={<AppShell />}>
           <Route
             path="/"

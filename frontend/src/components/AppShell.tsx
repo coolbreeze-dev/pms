@@ -10,6 +10,7 @@ const navItems = [
   { to: "/accounts", label: "Accounts" },
   { to: "/holdings", label: "Holdings" },
   { to: "/investments", label: "Investments" },
+  { to: "/readswell", label: "Readswell" },
   { to: "/settings", label: "Settings" },
 ];
 
