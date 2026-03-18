@@ -1,0 +1,5 @@
+dbs:
+  - path: ${LITESTREAM_DB_PATH:-/data/portfolio.db}
+    replicas:
+      - url: ${LITESTREAM_REPLICA_URL}
+        sync-interval: ${LITESTREAM_SYNC_INTERVAL:-15s}

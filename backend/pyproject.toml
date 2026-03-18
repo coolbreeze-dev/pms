@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "household-portfolio-backend"
+version = "0.1.0"
+description = "FastAPI backend for the Household Portfolio Tracker"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "alembic>=1.14.1",
+  "apscheduler>=3.10.4",
+  "eval-type-backport>=0.2.0",
+  "fastapi>=0.115.0",
+  "httpx>=0.28.1",
+  "ipython>=8.18.1",
+  "openpyxl>=3.1.5",
+  "pandas>=2.2.3",
+  "pydantic>=2.10.6",
+  "pydantic-settings>=2.8.1",
+  "python-multipart>=0.0.20",
+  "pymupdf>=1.25.3",
+  "quantstats>=0.0.77",
+  "pdfplumber>=0.11.5",
+  "sqlalchemy>=2.0.38",
+  "uvicorn[standard]>=0.34.0",
+  "xlrd>=2.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.4",
+  "pytest-cov>=6.0.0",
+  "pytest-asyncio>=0.25.3",
+  "httpx>=0.28.1",
+  "ruff>=0.9.9",
+]
+analytics = [
+  "quantstats>=0.0.77",
+]
+brokerage-sync = [
+  "snaptrade-python-sdk>=2.2.4",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[project.scripts]
+portfolio-sqlite = "app.ops.sqlite_backup:main"
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: household-portfolio-tracker
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./ops/Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/ready
+    disk:
+      name: portfolio-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: PORTFOLIO_DB_URL
+        value: sqlite:////data/portfolio.db
+      - key: ENVIRONMENT
+        value: production
+      - key: CORS_ORIGINS
+        value: ""
+      - key: ALLOWED_HOSTS
+        value: "*"
+      - key: FORCE_HTTPS
+        value: "false"
+      - key: AUTH_PASSWORD
+        sync: false
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: LOG_LEVEL
+        value: INFO
+      - key: BROKERAGE_SYNC_PROVIDER
+        value: disabled
