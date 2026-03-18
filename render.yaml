@@ -2,17 +2,13 @@ services:
   - type: web
     name: household-portfolio-tracker
     runtime: docker
-    plan: starter
+    plan: free
     dockerfilePath: ./ops/Dockerfile
     dockerContext: .
     healthCheckPath: /api/ready
-    disk:
-      name: portfolio-data
-      mountPath: /data
-      sizeGB: 1
     envVars:
       - key: PORTFOLIO_DB_URL
-        value: sqlite:////data/portfolio.db
+        value: sqlite:////tmp/portfolio.db
       - key: ENVIRONMENT
         value: production
       - key: CORS_ORIGINS

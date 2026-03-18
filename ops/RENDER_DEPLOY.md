@@ -2,6 +2,17 @@
 
 This is the easiest hosted path for this app right now.
 
+The checked-in `render.yaml` is now configured for a **free Render demo deploy**.
+
+That means:
+
+- no payment method is required just to try the app
+- the service can spin down when idle
+- the SQLite database is stored in `/tmp`, so data is **not durable**
+
+Use this only to preview the app, click around, and test the deployment path.
+For real usage, switch to a paid Starter instance with a persistent disk.
+
 Why this is the recommended option:
 
 - It can deploy directly from this repo
@@ -12,17 +23,19 @@ Why this is the recommended option:
 
 ## Expected Cost
 
+### Free demo mode
+
+- Render free web service: `$0`
+- persistent disk: not included
+
+### Durable paid mode later
+
 Render's official pricing page currently lists:
 
 - `Starter` web service: `$7/month`
 - persistent disk: `$0.25/GB/month`
 
-This app is configured for:
-
-- `1` Starter web service
-- `1 GB` persistent disk
-
-That puts the expected starting cost at about `$7.25/month`.
+If you later move this app to a durable setup, the likely starting cost is about `$7.25/month`.
 
 ## One-Time Setup
 
@@ -61,8 +74,8 @@ Recommended:
 
 - Service type: `Web Service`
 - Runtime: `Docker`
-- Plan: `Starter`
-- Disk: keep the attached persistent disk
+- Plan: `Free`
+- No disk is expected in demo mode
 
 ### 3. Fill the one required secret
 
@@ -77,6 +90,7 @@ Render will generate `AUTH_SECRET` automatically from the Blueprint.
 ### 4. Click `Apply`
 
 Render will build the Docker image, start the app, mount the disk, and give you a public URL like:
+Render will build the Docker image, start the app, and give you a public URL like:
 
 ```text
 https://your-service-name.onrender.com
@@ -100,6 +114,11 @@ After login:
 2. Import your CSV or Excel holdings
 3. Refresh prices
 4. Review the dashboard
+
+Important:
+
+- If the service redeploys or restarts, your imported data may disappear
+- Treat this free deploy as a demo/smoke-test environment, not your permanent portfolio home
 
 ## Updating the App Later
 
