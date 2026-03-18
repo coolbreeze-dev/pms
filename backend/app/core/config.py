@@ -3,10 +3,11 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 from pathlib import Path
+from typing import Annotated
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from pydantic import AliasChoices, Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 def normalize_database_url(value: str) -> str:
@@ -35,8 +36,10 @@ class Settings(BaseSettings):
         default=f"sqlite:///{Path(__file__).resolve().parents[2] / 'data' / 'portfolio.db'}",
         validation_alias=AliasChoices("PORTFOLIO_DB_URL", "DATABASE_URL"),
     )
-    cors_origins: list[str] = Field(default_factory=lambda: ["http://127.0.0.1:5173"])
-    allowed_hosts: list[str] = Field(default_factory=lambda: ["*"])
+    cors_origins: Annotated[list[str], NoDecode] = Field(
+        default_factory=lambda: ["http://127.0.0.1:5173"]
+    )
+    allowed_hosts: Annotated[list[str], NoDecode] = Field(default_factory=lambda: ["*"])
     finnhub_api_key: str | None = None
     alpha_vantage_api_key: str | None = None
     fx_api_base_url: str = "https://api.frankfurter.app"
@@ -57,9 +60,13 @@ class Settings(BaseSettings):
 
     @field_validator("cors_origins", "allowed_hosts", mode="before")
     @classmethod
-    def split_list_settings(cls, value: str | list[str]) -> list[str]:
+    def split_list_settings(cls, value: str | list[str] | None) -> list[str]:
+        if value is None:
+            return []
         if isinstance(value, list):
             return value
+        if not value.strip():
+            return []
         return [origin.strip() for origin in value.split(",") if origin.strip()]
 
     @field_validator("portfolio_db_url", mode="before")
