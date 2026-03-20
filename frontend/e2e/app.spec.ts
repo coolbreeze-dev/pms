@@ -1,20 +1,23 @@
 import { expect, test, type Page } from "@playwright/test";
 
-const password = process.env.AUTH_PASSWORD ?? "open-sesame";
+const password = process.env.AUTH_PASSWORD?.trim() || "open-sesame";
 
 async function unlock(page: Page) {
   await page.goto("/");
-  await Promise.race([
-    page.getByRole("link", { name: "Dashboard" }).waitFor({ state: "visible", timeout: 5_000 }),
-    page.getByLabel("Password").waitFor({ state: "visible", timeout: 5_000 }),
-  ]).catch(() => undefined);
+  const dashboardLink = page.getByRole("link", { name: "Dashboard" });
+  try {
+    await dashboardLink.waitFor({ state: "visible", timeout: 5_000 });
+    return;
+  } catch {
+    // Password auth is enabled in this path, so continue into the unlock flow.
+  }
 
   const passwordInput = page.getByLabel("Password");
-  if (await passwordInput.isVisible()) {
-    await passwordInput.fill(password);
-    await page.getByRole("button", { name: "Unlock app" }).click();
-  }
-  await expect(page.getByRole("link", { name: "Dashboard" })).toBeVisible();
+  await passwordInput.waitFor({ state: "visible", timeout: 10_000 });
+  await passwordInput.fill(password);
+  await expect(page.getByRole("button", { name: "Unlock app" })).toBeEnabled();
+  await page.getByRole("button", { name: "Unlock app" }).click();
+  await expect(dashboardLink).toBeVisible();
 }
 
 test.beforeEach(async ({ page }) => {
@@ -76,7 +79,7 @@ test("previews and commits a spreadsheet import from settings", async ({ page })
   await commitPanel.locator('input[name="brokerage"]').fill("Playwright");
   await page.getByRole("button", { name: "Commit import" }).click();
 
-  await expect(page.getByText("Import committed successfully.")).toBeVisible();
+  await expect(page.getByText(/Imported 2 holding\(s\)/)).toBeVisible();
 
   await page.getByRole("link", { name: "Accounts" }).click();
   await expect(page.getByText("E2E Import Account")).toBeVisible();

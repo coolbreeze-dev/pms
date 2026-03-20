@@ -53,7 +53,7 @@ describe("AppShell", () => {
 
     renderShell();
 
-    expect(await screen.findByRole("button", { name: "Unlock" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Unlock app" })).toBeInTheDocument();
     expect(screen.getByText("Protected session")).toBeInTheDocument();
   });
 

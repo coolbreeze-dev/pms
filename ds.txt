@@ -1,0 +1,205 @@
+```markdown
+
+# Design System Specification: Midnight Executive
+
+
+
+## 1. Overview & Creative North Star
+
+The Creative North Star for this design system is **"The Sovereign Vault."**
+
+
+
+This system moves beyond the standard "SaaS Dashboard" aesthetic into the realm of high-end editorial finance. It is designed to feel like a private, high-stakes environment where every pixel conveys authority and precision. We reject the "Bootstrap-grid" look in favor of **Intentional Asymmetry** and **Tonal Depth**. By utilizing deep obsidian foundations punctuated by sharp metallic accents, we create a UI that doesn't just display data—it commands it.
+
+
+
+The interface should feel "carved" rather than "assembled." We achieve this through layering and light rather than lines and borders, creating a digital experience that mirrors the tactility of a luxury physical asset.
+
+
+
+---
+
+
+
+## 2. Colors & Atmospheric Depth
+
+The palette is rooted in a high-contrast relationship between deep charcoal foundations and radiant metallic highlights.
+
+
+
+### The Palette
+
+* **Base (Surface):** `#111316` (Deep Charcoal). This is our void; it provides the silence necessary for the data to speak.
+
+* **Primary (Gold):** `#f2ca50` (Primary) and `#d4af37` (Primary Container). Used for critical actions and high-value indicators.
+
+* **Secondary (Amber):** `#ffbf00`. Used for growth, alerts, and kinetic energy within the dashboard.
+
+* **Neutral Tones:** Utilizing `surface-container-low` (`#1a1c1f`) through `highest` (`#333538`) to define structure.
+
+
+
+### The "No-Line" Rule
+
+**Explicit Instruction:** Do not use 1px solid borders to section off content. Traditional "boxes" make an interface look cheap and restricted.
+
+* **Separation via Tone:** Use background color shifts. A widget should be defined by sitting on `surface-container-low` against a `surface` background.
+
+* **Separation via Space:** Use the spacing scale (e.g., `spacing.8` or `spacing.12`) to create mental groupings.
+
+
+
+### Surface Hierarchy & Nesting
+
+Think of the UI as layers of obsidian glass.
+
+* **Foundation:** `surface-dim` (`#111316`)
+
+* **Main Content Areas:** `surface-container-low` (`#1a1c1f`)
+
+* **Active/Interactive Cards:** `surface-container-high` (`#282a2d`)
+
+* **Floating Modals/Overlays:** `surface-container-highest` (`#333538`)
+
+
+
+### The "Glass & Signature Texture" Rule
+
+To elevate the dashboard, use **Glassmorphism** for floating navigation or secondary toolbars. Apply a `backdrop-blur` of 12px-20px to `surface-container-lowest` with 60% opacity.
+
+* **Signature Gradient:** For main CTAs, use a linear gradient from `primary` (`#f2ca50`) to `primary-container` (`#d4af37`) at a 135-degree angle. This mimics the sheen of brushed gold.
+
+
+
+---
+
+
+
+## 3. Typography: The Editorial Voice
+
+We use **Manrope**, but with a specific "Luxury Financial" configuration. Standard tracking and weights feel too "tech." We need "Institutional."
+
+
+
+* **Display & Headlines:** Use `Medium (500)` weight with a `-0.02em` letter-spacing. This creates a tight, authoritative "locked-in" feel for large numbers and section headers.
+
+* **Titles:** Use `SemiBold (600)` with `0.01em` tracking for legibility at medium sizes.
+
+* **Body:** Use `Regular (400)` with slightly increased tracking (`0.02em`) to ensure readability against the high-contrast dark background.
+
+* **Labels:** Always use `Bold (700)` and `Uppercase` for small labels (e.g., "MARKET CAP") to evoke the feel of a premium watch face or a financial broadsheet.
+
+
+
+---
+
+
+
+## 4. Elevation & Depth
+
+In this design system, shadows are light, and borders are ghosts.
+
+
+
+### The Layering Principle
+
+Depth is achieved by stacking. Place a `surface-container-highest` card on top of a `surface-container-low` section. The subtle shift in hex code creates a "soft lift" that feels architectural rather than digital.
+
+
+
+### Ambient Shadows
+
+If an element must float (like a dropdown or modal), use an ultra-diffused shadow:
+
+* **Blur:** 40px - 60px
+
+* **Opacity:** 15%
+
+* **Color:** `#000000` (Never use grey; use true black to blend into the obsidian base).
+
+
+
+### The "Ghost Border" Fallback
+
+If accessibility requires a container boundary, use the `outline-variant` (`#4d4635`) at **15% opacity**. This creates a "glint" on the edge of the container rather than a visible line.
+
+
+
+---
+
+
+
+## 5. Components
+
+
+
+### Buttons: The "Gold Standard"
+
+* **Primary:** Gradient fill (Gold to Amber). No border. White-space heavy. `rounded-sm` (0.125rem) for a sharp, precision-cut look.
+
+* **Secondary:** `surface-container-highest` fill with a `primary` text color.
+
+* **Tertiary:** Ghost style. No background. `primary` text with an underline that appears only on hover.
+
+
+
+### Cards & Lists: The "Seamless" Approach
+
+* **Forbid Dividers:** Do not use lines between list items. Use a `1.4rem` (`spacing.4`) vertical gap.
+
+* **Hover States:** When hovering over a list item, change the background to `surface-bright` (`#37393d`) and apply a subtle `primary` (Gold) vertical glow (2px wide) on the far left.
+
+
+
+### Input Fields
+
+* **Style:** Minimalist. No bottom line or box. Use a `surface-container-low` background with a `rounded-none` or `rounded-sm` corner.
+
+* **Focus State:** The background stays the same, but the `outline` becomes a subtle `secondary` (Amber) glow.
+
+
+
+### Interactive Data Points (Chips)
+
+* Used for "Live" or "Market Open" indicators. Use `secondary_container` (`#ffbf00`) with `on_secondary_container` (`#6d5000`) text. Always uppercase.
+
+
+
+---
+
+
+
+## 6. Do’s and Don’ts
+
+
+
+### Do:
+
+* **Do** use extreme white space. Let the obsidian background breathe.
+
+* **Do** use asymmetrical layouts. A 3-column grid where the center column is 2x wider than the others creates an editorial feel.
+
+* **Do** use "Optical Centering." High-contrast text often looks lower than it is; adjust manually for visual balance.
+
+
+
+### Don't:
+
+* **Don't** use standard 1px borders. If you feel you need a line, use a background color change instead.
+
+* **Don't** use pure white (`#FFFFFF`) for body text. Use `on_surface_variant` (`#d0c5af`) to reduce eye strain and maintain the "warm gold" atmosphere.
+
+* **Don't** use large corner radii. Keep it between `none` (0px) and `md` (0.375rem). Rounded "pills" feel too friendly/consumer; sharp corners feel institutional.
+
+
+
+---
+
+
+
+## 7. Signature Dash Components (Custom)
+
+* **The Ticker Tape:** A high-contrast, scrolling `surface-container-lowest` bar at the top of the viewport with `label-md` text in `primary`.
+
+* **The Performance Heatmap:** Utilizing tonal shifts from `on_error_container` (Deep Red) to `primary` (Gold) to show portfolio health without breaking the "Midnight" aesthetic.

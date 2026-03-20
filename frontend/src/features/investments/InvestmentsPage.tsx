@@ -25,6 +25,8 @@ const transactionTypes = ["buy", "sell", "deposit", "withdrawal", "dividend"] as
 const categories: AccountCategory[] = ["all", "brokerage", "retirement", "india"];
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from({ length: 5 }, (_, index) => currentYear - index);
+const chartTextColor = "#d0c5af";
+const chartGridColor = "rgba(77, 70, 53, 0.18)";
 
 const transactionSchema = z.object({
   account_id: z.coerce.number().min(1),
@@ -157,14 +159,14 @@ export function InvestmentsPage() {
         {
           label: "Net investment",
           data: summaryQuery.data?.monthly.map((row) => numeric(row.net_investment)) ?? [],
-          backgroundColor: "#0b7fab",
-          borderRadius: 10,
+          backgroundColor: "#f2ca50",
+          borderRadius: 6,
         },
         {
           label: "Cumulative net",
           data: summaryQuery.data?.monthly.map((row) => numeric(row.cumulative_net_investment)) ?? [],
-          backgroundColor: "#ffcb77",
-          borderRadius: 10,
+          backgroundColor: "#d4af37",
+          borderRadius: 6,
         },
       ],
     }),
@@ -177,7 +179,7 @@ export function InvestmentsPage() {
       datasets: [
         {
           data: summaryQuery.data?.type_breakdown.map((item) => numeric(item.amount)) ?? [],
-          backgroundColor: ["#0b7fab", "#1f9f6f", "#ff7f50", "#ffcb77", "#7d8eff"],
+          backgroundColor: ["#f2ca50", "#d4af37", "#ffbf00", "#858c72", "#b37a2e"],
           borderWidth: 0,
         },
       ],
@@ -299,7 +301,32 @@ export function InvestmentsPage() {
               options={{
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: "bottom" } },
+                plugins: {
+                  legend: {
+                    position: "bottom",
+                    labels: {
+                      color: chartTextColor,
+                    },
+                  },
+                },
+                scales: {
+                  x: {
+                    ticks: {
+                      color: chartTextColor,
+                    },
+                    grid: {
+                      display: false,
+                    },
+                  },
+                  y: {
+                    ticks: {
+                      color: chartTextColor,
+                    },
+                    grid: {
+                      color: chartGridColor,
+                    },
+                  },
+                },
               }}
             />
           </div>
@@ -320,7 +347,14 @@ export function InvestmentsPage() {
                   options={{
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { position: "bottom" } },
+                    plugins: {
+                      legend: {
+                        position: "bottom",
+                        labels: {
+                          color: chartTextColor,
+                        },
+                      },
+                    },
                   }}
                 />
               </div>

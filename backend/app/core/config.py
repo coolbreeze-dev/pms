@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from functools import lru_cache
 from pathlib import Path
@@ -65,9 +66,14 @@ class Settings(BaseSettings):
             return []
         if isinstance(value, list):
             return value
-        if not value.strip():
+        trimmed = value.strip()
+        if not trimmed:
             return []
-        return [origin.strip() for origin in value.split(",") if origin.strip()]
+        if trimmed.startswith("["):
+            parsed = json.loads(trimmed)
+            if isinstance(parsed, list):
+                return [str(item).strip() for item in parsed if str(item).strip()]
+        return [origin.strip() for origin in trimmed.split(",") if origin.strip()]
 
     @field_validator("portfolio_db_url", mode="before")
     @classmethod

@@ -22,6 +22,9 @@ ChartJS.register(ArcElement, CategoryScale, Filler, Legend, LineElement, LinearS
 
 const categories: AccountCategory[] = ["brokerage", "retirement", "india", "all"];
 const periods: Period[] = ["1d", "1w", "1m", "3m", "6m", "1y", "ytd", "all"];
+const chartTextColor = "#d0c5af";
+const chartGridColor = "rgba(77, 70, 53, 0.18)";
+const chartPalette = ["#ffbf00", "#858c72", "#b37a2e", "#9f583d", "#736b5e"];
 
 export function DashboardPage() {
   const currentYear = new Date().getFullYear();
@@ -70,15 +73,14 @@ export function DashboardPage() {
 
   const performanceData = useMemo(() => {
     const benchmarkNames = Object.keys(performancePoints[0]?.benchmarks ?? {});
-    const palette = ["#ff7f50", "#0b7fab", "#1f9f6f", "#9166ff", "#d14d72"];
     return {
       labels: performancePoints.map((point) => formatDate(point.date)),
       datasets: [
         {
           label: "Portfolio",
           data: performancePoints.map((point) => numeric(point.percent_change)),
-          borderColor: "#0b7fab",
-          backgroundColor: "rgba(11, 127, 171, 0.15)",
+          borderColor: "#f2ca50",
+          backgroundColor: "rgba(242, 202, 80, 0.16)",
           fill: true,
           tension: 0.25,
         },
@@ -89,7 +91,7 @@ export function DashboardPage() {
             data: performancePoints.map((point) =>
               point.benchmarks[name] == null ? null : numeric(point.benchmarks[name]),
             ),
-            borderColor: palette[index % palette.length],
+            borderColor: chartPalette[index % chartPalette.length],
             backgroundColor: "transparent",
             tension: 0.25,
             spanGaps: true,
@@ -105,16 +107,16 @@ export function DashboardPage() {
         {
           data: allocationSlices.map((slice) => numeric(slice.value)),
           backgroundColor: [
-            "#0b7fab",
-            "#1f9f6f",
-            "#ff7f50",
-            "#ffcb77",
-            "#7d8eff",
-            "#e16f7c",
-            "#7a9e9f",
-            "#b8c480",
-            "#485696",
-            "#f6bd60",
+            "#f2ca50",
+            "#d4af37",
+            "#ffbf00",
+            "#858c72",
+            "#b37a2e",
+            "#9f583d",
+            "#6e7167",
+            "#978d79",
+            "#8c744a",
+            "#5e6159",
           ],
           borderWidth: 0,
         },
@@ -129,7 +131,7 @@ export function DashboardPage() {
       datasets: [
         {
           data: sectorSlices.map((slice) => numeric(slice.value)),
-          backgroundColor: ["#0b7fab", "#1f9f6f", "#ff7f50", "#ffcb77", "#7d8eff", "#e16f7c"],
+          backgroundColor: ["#f2ca50", "#d4af37", "#ffbf00", "#858c72", "#b37a2e", "#9f583d"],
           borderWidth: 0,
         },
       ],
@@ -314,6 +316,7 @@ export function DashboardPage() {
                       ticks: {
                         autoSkip: true,
                         maxTicksLimit: 8,
+                        color: chartTextColor,
                       },
                       grid: {
                         display: false,
@@ -322,6 +325,10 @@ export function DashboardPage() {
                     y: {
                       ticks: {
                         callback: (value) => `${value}%`,
+                        color: chartTextColor,
+                      },
+                      grid: {
+                        color: chartGridColor,
                       },
                     },
                   },
@@ -348,7 +355,14 @@ export function DashboardPage() {
                 options={{
                   responsive: true,
                   maintainAspectRatio: false,
-                  plugins: { legend: { position: "bottom" } },
+                  plugins: {
+                    legend: {
+                      position: "bottom",
+                      labels: {
+                        color: chartTextColor,
+                      },
+                    },
+                  },
                 }}
               />
             </div>
@@ -526,7 +540,14 @@ export function DashboardPage() {
                 options={{
                   responsive: true,
                   maintainAspectRatio: false,
-                  plugins: { legend: { position: "bottom" } },
+                  plugins: {
+                    legend: {
+                      position: "bottom",
+                      labels: {
+                        color: chartTextColor,
+                      },
+                    },
+                  },
                 }}
               />
             </div>

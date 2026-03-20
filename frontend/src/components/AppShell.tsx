@@ -35,12 +35,12 @@ export function AppShell() {
   }
 
   if (sessionQuery.isLoading) {
-    return <div className="shell"><div className="panel">Checking session...</div></div>;
+    return <div className="portfolio-app shell"><div className="panel">Checking session...</div></div>;
   }
 
   if (sessionQuery.isError) {
     return (
-      <div className="shell">
+      <div className="portfolio-app shell">
         <div className="panel panel--danger">{sessionQuery.error.message}</div>
       </div>
     );
@@ -48,7 +48,7 @@ export function AppShell() {
 
   if (sessionQuery.data?.enabled && !sessionQuery.data.authenticated) {
     return (
-      <div className="shell shell--auth">
+      <div className="portfolio-app shell shell--auth">
         <section className="panel auth-panel">
           <div>
             <p className="eyebrow">Protected session</p>
@@ -70,6 +70,8 @@ export function AppShell() {
                 className="button button--primary button--icon-label"
                 type="submit"
                 disabled={loginMutation.isPending || !password}
+                aria-label="Unlock app"
+                title="Unlock app"
               >
                 <UnlockIcon />
                 <span>{loginMutation.isPending ? "Unlocking..." : "Unlock"}</span>
@@ -85,7 +87,7 @@ export function AppShell() {
   }
 
   return (
-    <div className="shell">
+    <div className="portfolio-app shell">
       <header className="shell__header">
         <div>
           <p className="eyebrow">Local-first portfolio command center</p>
